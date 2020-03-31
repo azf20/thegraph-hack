@@ -8,7 +8,7 @@ import * as serviceWorker from "./serviceWorker";
 
 // You should replace this uri with your own and put it into a .env file
 const client = new ApolloClient({
-  uri: "https://api.thegraph.com/subgraphs/name/paulrberg/create-eth-app",
+  uri: "https://api.thegraph.com/subgraphs/name/sablierhq/sablier",
 });
 
 ReactDOM.render(

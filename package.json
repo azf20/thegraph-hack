@@ -26,5 +26,15 @@
       "**/@graphprotocol/graph-ts",
       "**/@graphprotocol/graph-ts/**"
     ]
+  },
+  "dependencies": {
+    "cytoscape": "^3.14.1",
+    "d3": "^5.15.0",
+    "etherscan-api": "^10.0.5",
+    "eventemitter3": "^4.0.0",
+    "react": "^16.13.1",
+    "react-cytoscapejs": "^1.2.1",
+    "react-d3-graph": "^2.4.0",
+    "react-select": "^3.1.0"
   }
 }
