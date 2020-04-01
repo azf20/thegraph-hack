@@ -13,7 +13,7 @@ var EE = new EventEmitter()
 
 const GET_TRANSFERS = gql`
   {
-    streams(first: 10) {
+    streams(first: 100) {
       id
       sender
       recipient
@@ -79,7 +79,7 @@ function CytoscapeNetwork() {
       h: "500px"
     })
 
-    const [tokenOptions, setTokenOptions] = React.useState([{label: 'All', value: '*'}]);
+    const [tokenOptions, setTokenOptions] = React.useState([]);
 
     const cytoscapeLayout = {
     name: 'cose',
@@ -154,17 +154,19 @@ function CytoscapeNetwork() {
           nodes[stream.sender]['data']['sends']++
           nodes[stream.sender]['data']['transactions']++
           nodes[stream.sender]['data']['isSender'] = true
+          nodes[stream.sender]['data'][stream.token.symbol] = true
         }
         else {
-          nodes[stream.sender] = {data: {id: stream.sender, label: stream.sender, sends: 1, receives: 0, transactions: 1, isSender: true, isRecipient: false}}
+          nodes[stream.sender] = {data: {id: stream.sender, label: stream.sender, sends: 1, receives: 0, transactions: 1, isSender: true, isRecipient: false, [stream.token.symbol]: true}}
         }
         if (stream.recipient in nodes) {
           nodes[stream.recipient]['data']['receives']++
           nodes[stream.recipient]['data']['transactions']++
           nodes[stream.recipient]['data']['isRecipient'] = true
+          nodes[stream.recipient]['data'][stream.token.symbol] = true
         }
         else {
-          nodes[stream.recipient] = {data: {id: stream.recipient, label: stream.recipient, sends: 0, receives: 1, transactions: 1, isSender: false, isRecipient: true}}
+          nodes[stream.recipient] = {data: {id: stream.recipient, label: stream.recipient, sends: 0, receives: 1, transactions: 1, isSender: false, isRecipient: true, [stream.token.symbol]: true}}
         }
       }
 
@@ -209,10 +211,38 @@ function CytoscapeNetwork() {
           } else {
             console.log('tap on some element');
             EE.emit('node-click', event.target._private.data)
+            console.log(event.target._private.data)
           }
         })
-        EE.on('filter-select',function() {var filteredEdges = myCyRef.filter('edge[symbol = "USDC"]')
-        myCyRef.remove(filteredEdges)
+
+        var filteredEdges = {}
+        var tokenFiltered = false
+
+        EE.on('filter-select',function(values) {
+          console.log(values)
+          if(!Array.isArray(values) || !values.length) {
+            console.log('tried')
+            filteredEdges.restore()
+            tokenFiltered = false
+          }
+          else {
+            if(tokenFiltered) {filteredEdges.restore()}
+
+          var edgeFilter  = 'edge'
+          var nodeFilter  = 'node'
+
+          for (let tkn of values) {
+            edgeFilter = edgeFilter + '[symbol != "' + tkn.value + '"]'
+            nodeFilter = nodeFilter + '[^' + tkn.value + ']'
+            console.log(nodeFilter)
+            console.log(edgeFilter)
+          }
+
+          filteredEdges = myCyRef.filter(edgeFilter + ", " + nodeFilter);
+          console.log(filteredEdges)
+          myCyRef.remove(filteredEdges)
+          tokenFiltered = true
+        }
       })
       }
         setUpListeners()
@@ -222,8 +252,9 @@ function CytoscapeNetwork() {
     return (
       <div className="CytoscapeNetwork">
       <div className="filters">
-      <Select isMulti options={tokenOptions} onChange={tokenSelectChange}/>
+      {loading ? <p>Loading...</p> : <Select isMulti options={tokenOptions} onChange={tokenSelectChange}/>}
       </div>
+
 
         <CytoscapeComponent
         className="foo bar"
