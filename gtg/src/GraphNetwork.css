@@ -1,0 +1,23 @@
+.filters {
+  position: relative;
+  min-width: 50vh;
+  top: 0;
+  left: 0;
+  background: var(--panelBgColor);
+  z-index: 10;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  margin: 0.5em;
+  font-size: 0.8em;
+}
+
+.nodeInfo {
+  position: relative;
+  min-width: 50vh;
+  background: var(--panelBgColor);
+  z-index: 10;
+  padding: 0.5em;
+  border-radius: 0.5em;
+  margin: 0.5em;
+  font-size: 0.8em;
+}
