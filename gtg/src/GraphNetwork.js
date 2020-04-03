@@ -11,8 +11,9 @@ var EventEmitter = require('eventemitter3');
 var EE = new EventEmitter()
 
 const GET_TRANSFERS = gql`
+query GetStreams($streams_to_show: Int!)
   {
-    streams(first: 10) {
+    streams(first: $streams_to_show) {
       id
       sender
       recipient
@@ -64,7 +65,11 @@ function InfoTab() {
 
 function CytoscapeNetwork() {
 
-    const { loading, error, data } = useQuery(GET_TRANSFERS);
+    const streams_to_show = 500
+
+    const { loading, error, data } = useQuery(GET_TRANSFERS, {
+    variables: { streams_to_show },
+  });
 
     const [myCyRef, updateMyCyRef] = React.useState({
     });
