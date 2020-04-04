@@ -1,25 +1,14 @@
-# Create React App example
+# GraphTheGraph: Sablier Edition
 
 ## How to use
 
-Download the example [or clone the repo](https://github.com/mui-org/material-ui):
+Hacked as part of the [StakeZero Future of Blockchain Hackathon](https://medium.com/encode-club/prizes-and-challenges-future-of-blockchain-competition-40fe71bfe0ac").
 
-```sh
-curl https://codeload.github.com/mui-org/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/create-react-app
-cd create-react-app
+Getting [Sablier Finance](https://sablier.finance/) data from [The Graph](https://thegraph.com/) to build [Cytoscape](https://js.cytoscape.org/) Network visualisations.
+
+
+## Running it locally
 ```
-
-Install it and run:
-
-```sh
-npm install
-npm start
+yarn install
+yarn start
 ```
-
-or:
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui-org/material-ui/tree/master/examples/create-react-app)
-
-## The idea behind the example
-
-This example demonstrates how you can use [Create React App](https://github.com/facebookincubator/create-react-app).
