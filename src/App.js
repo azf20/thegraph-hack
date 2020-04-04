@@ -6,13 +6,14 @@ import Link from '@material-ui/core/Link';
 import ProTip from './ProTip';
 import GraphNetwork from './GraphNetwork'
 import Paper from '@material-ui/core/Paper';
+import AppBar from './app-bar'
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="https://azfuller.com/">
+        Adam Fuller
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -22,18 +23,17 @@ function Copyright() {
 
 export default function App() {
   return (
-    <Container maxWidth="sm">
+    <>
+    <AppBar title={"GraphTheGraph"} githubUser={"azf20"} />
+    <Container>
       <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          GraphTheGraph
-        </Typography>
         <Paper>
         <GraphNetwork/>
         </Paper>
         <ProTip />
         <Copyright />
       </Box>
-
     </Container>
+    </>
   );
 }

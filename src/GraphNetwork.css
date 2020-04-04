@@ -21,3 +21,10 @@
   margin: 0.5em;
   font-size: 0.8em;
 }
+
+.addressCell {
+    white-space: nowrap;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

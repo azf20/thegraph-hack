@@ -25,11 +25,11 @@ const useStyles = makeStyles((theme) => ({
 export default function ProTip() {
   const classes = useStyles();
   return (
-    <Typography className={classes.root} color="textSecondary">
+    <Typography className={classes.root} color="textSecondary" align="center">
       <LightBulbIcon className={classes.lightBulb} />
-      Pro tip: See more{' '}
-      <Link href="https://material-ui.com/getting-started/templates/">templates</Link> on the
-      Material-UI documentation.
+      Made with curiosity as part of the {' '}
+      <Link href="https://medium.com/encode-club/prizes-and-challenges-future-of-blockchain-competition-40fe71bfe0ac">StakeZero Future of Blockchain Hackathon</Link>
+      . Hat tip to <Link href="https://thegraph.com/">The Graph</Link>, <Link href="https://sablier.finance/">Sablier</Link>, <Link href="https://js.cytoscape.org/">Sablier</Link> and <Link href="https://material-ui.com/">material-ui</Link>.
     </Typography>
   );
 }
