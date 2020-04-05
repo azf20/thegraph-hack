@@ -1,4 +1,4 @@
-# Graph TheGraph: Sablier proof-of-concept
+# Graph The Graph: Sablier proof-of-concept
 
 ## About
 
