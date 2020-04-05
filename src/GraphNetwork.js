@@ -86,11 +86,9 @@ function InfoTab() {
 
     function emitted(context) {
         updateInfoNode(context); // true
-        console.log(infoNode)
       }
 
     function totalsUpdate(context) {
-        console.log(context)
         updateTotalNodes(context[0])
         updateTotalStreams(context[1])
       }
@@ -246,7 +244,7 @@ function InfoTab() {
           </TableHead>
           <TableBody>
             {infoNode.transactionDetails.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row.id + row.type}>
                 <TableCell component="th" scope="row" className="addressCell">
                   <Link href={etherscanLink('address',row.counterpart)} target="_blank">{row.counterpart}</Link>
                 </TableCell>
@@ -509,8 +507,6 @@ function CytoscapeNetwork() {
 
     React.useEffect(() => {
       if (!loading && !error && data && data.streams) {
-        console.log({ streams: data.streams });
-        console.log([loading, error, data])
 
         var tokenLookup = {}
         var newTokenOptions = [{}]
@@ -529,11 +525,11 @@ function CytoscapeNetwork() {
 
         function setUpListeners() {
         myCyRef.on('tap', function(event) {
-          if( event.target === myCyRef ){
+          var evtTarget = event.target;
+          if( evtTarget === myCyRef ){
             EE.emit('node-click', null)
           } else {
             EE.emit('node-click', event.target._private.data)
-            console.log(event.target._private.data)
           }
         })
 
@@ -543,7 +539,6 @@ function CytoscapeNetwork() {
 
 
         EE.on('filter-select',function(values) {
-          console.log(values)
           if(!Array.isArray(values) || !values.length) {
             filteredEdges.restore()
             tokenFiltered = false
@@ -557,12 +552,9 @@ function CytoscapeNetwork() {
           for (let tkn of values) {
             edgeFilter = edgeFilter + '[symbol != "' + tkn.value + '"]'
             nodeFilter = nodeFilter + '[^' + tkn.value + ']'
-            console.log(nodeFilter)
-            console.log(edgeFilter)
           }
 
           filteredEdges = myCyRef.filter(edgeFilter + ", " + nodeFilter);
-          console.log(filteredEdges)
           myCyRef.remove(filteredEdges)
           tokenFiltered = true
         }
