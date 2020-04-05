@@ -27,7 +27,7 @@ export default function App() {
     <AppBar title={"Graph TheGraph"} githubLink={"https://github.com/azf20/thegraph-hack/blob/master/README.md"} />
     <Container>
       <Box m={1}>
-        <ProTip test={<>Click Start to explore <Link href="https://sablier.finance/">Sablier</Link> streams. Click nodes & edges to find out more.</>}/>
+        <ProTip test={<><Link href="https://sablier.finance/">Sablier</Link> lets you "stream" tokens to other Ethereum users. Click Start to explore Sablier streams. Click nodes & edges to find out more.</>}/>
         <Paper>
         <GraphNetwork/>
         </Paper>
