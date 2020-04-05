@@ -511,12 +511,19 @@ function CytoscapeNetwork() {
     React.useEffect(() => {
       if (!loading && !error && data && data.streams) {
 
+        function getTokenStreams(stream, symbol) {
+          return stream.token.symbol == symbol
+        }
+
         var tokenLookup = {}
         var newTokenOptions = [{}]
         for (var j = 0; j < data.tokens.length; j++) {
           tokenLookup[data.tokens[j]['name']] = data.tokens[j]
           tokenLookup[data.tokens[j]['name']]['color'] = colors[j]
-          tokenOptions.push({label: data.tokens[j]['name'], value: data.tokens[j]['symbol']})
+          const streamCount = data.streams.filter(function(x) {return(getTokenStreams(x, data.tokens[j]['symbol']))}).length
+          if (streamCount > 0) {
+          tokenOptions.push({label: data.tokens[j]['name'] + " (" + streamCount + ")", value: data.tokens[j]['symbol']})
+          }
         }
 
         const newNodes = createNodes(data.streams)
