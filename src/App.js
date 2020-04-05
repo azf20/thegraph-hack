@@ -26,11 +26,17 @@ export default function App() {
     <>
     <AppBar title={"Graph TheGraph: Sablier Interactive"} githubUser={"azf20/thegraph-hack"} />
     <Container>
-      <Box my={4}>
+      <Box m={1}>
+        <ProTip test={<>Click Start to explore <Link href="https://sablier.finance/">Sablier</Link> streams</>}/>
         <Paper>
         <GraphNetwork/>
         </Paper>
-        <ProTip />
+        <ProTip test={
+          <>
+              Made with curiosity as part of the
+              <Link href="https://medium.com/encode-club/prizes-and-challenges-future-of-blockchain-competition-40fe71bfe0ac">StakeZero Future of Blockchain Hackathon</Link>
+              . Built with <Link href="https://thegraph.com/">The Graph</Link>, <Link href="https://sablier.finance/">Sablier</Link>, <Link href="https://js.cytoscape.org/">Cytoscape</Link>, <Link href="https://github.com/PaulRBerg/create-eth-app">create-eth-app</Link> and <Link href="https://material-ui.com/">material-ui</Link>.
+              </>}/>
         <Copyright />
       </Box>
     </Container>

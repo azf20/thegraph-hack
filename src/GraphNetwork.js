@@ -13,6 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import "./GraphNetwork.css";
 import { makeStyles } from '@material-ui/core/styles';
 import Cytoscape from 'cytoscape';
@@ -291,7 +292,7 @@ function CytoscapeNetwork() {
 
     const [refreshButton, setRefreshButton] = React.useState('Start');
 
-    const coseLayout = {
+    const colaLayout = {
     name: 'cola',
     animate: true, // whether to show the layout as it's running
     refresh: 1, // number of ticks per frame; higher is faster but more jerky
@@ -575,7 +576,7 @@ function CytoscapeNetwork() {
 
     return (
       <div className="CytoscapeNetwork">
-      <div className="filters">
+      <Box className="filters" m={1}>
       <Grid container spacing={2}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <Grid item>
@@ -594,9 +595,9 @@ function CytoscapeNetwork() {
       <p></p>
       <Select isMulti options={tokenOptions} onChange={tokenSelectChange} placeholder="Select tokens"/>
       </>}
-      </div>
+      </Box>
 
-
+        <Paper>
         <CytoscapeComponent
         className="foo bar"
         elements={CytoscapeComponent.normalizeElements(cytoscapeData)}
@@ -616,14 +617,16 @@ function CytoscapeNetwork() {
       style: {
         'width': 1,
         'line-color': 'data(color)',
-        'target-arrow-color': '#ccc',
-        'target-arrow-shape': 'triangle'
+        'target-arrow-color': 'data(color)',
+        'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier'
       }
     }
     ]}
         layout={cytoscapeLayout}
         cy={(cy) => { updateMyCyRef(cy) }}
         />
+        </Paper>
       </div>
     );
 }
@@ -631,7 +634,7 @@ function CytoscapeNetwork() {
 function GraphNetwork() {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <Box m={1} className={classes.root}>
     <Grid container spacing={3}>
         <Grid item>
           <CytoscapeNetwork/>
@@ -640,7 +643,7 @@ function GraphNetwork() {
           <InfoTab/>
         </Grid>
     </Grid>
-    </div>
+    </Box>
   );
 }
 

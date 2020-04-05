@@ -1,6 +1,5 @@
 .filters {
   position: relative;
-  max-width: 40vw;
   top: 0;
   left: 0;
   background: var(--panelBgColor);

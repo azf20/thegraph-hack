@@ -14,7 +14,7 @@ function LightBulbIcon(props) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(6, 0, 3),
+    margin: theme.spacing(3, 0, 3),
   },
   lightBulb: {
     verticalAlign: 'middle',
@@ -22,14 +22,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProTip() {
+export default function ProTip(test) {
   const classes = useStyles();
+  console.log(test)
   return (
     <Typography className={classes.root} color="textSecondary" align="center">
-      <LightBulbIcon className={classes.lightBulb} />
-      Made with curiosity as part of the {' '}
-      <Link href="https://medium.com/encode-club/prizes-and-challenges-future-of-blockchain-competition-40fe71bfe0ac">StakeZero Future of Blockchain Hackathon</Link>
-      . Built with <Link href="https://thegraph.com/">The Graph</Link>, <Link href="https://sablier.finance/">Sablier</Link>, <Link href="https://js.cytoscape.org/">Cytoscape</Link> and <Link href="https://material-ui.com/">material-ui</Link>.
+    <LightBulbIcon className={classes.lightBulb} />
+      {test.test}
     </Typography>
+
   );
 }
