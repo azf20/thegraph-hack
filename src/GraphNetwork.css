@@ -1,6 +1,6 @@
 .filters {
   position: relative;
-  min-width: 50vh;
+  max-width: 40vw;
   top: 0;
   left: 0;
   background: var(--panelBgColor);
@@ -13,7 +13,8 @@
 
 .nodeInfo {
   position: relative;
-  min-width: 50vh;
+  min-width: 10vw;
+  max-width: 500px;
   background: var(--panelBgColor);
   z-index: 10;
   padding: 0.5em;
@@ -24,7 +25,7 @@
 
 .addressCell {
     white-space: nowrap;
-    max-width: 200px;
+    max-width: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
 }

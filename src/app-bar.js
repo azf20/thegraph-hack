@@ -26,7 +26,7 @@ const AppBar = props => {
 		<div className={classes.root}>
 			<MuiAppBar position="static">
 				<Toolbar>
-					<Typography variant="title" color="inherit" className={classes.flex}>
+					<Typography variant="h5" color="inherit" className={classes.flex}>
 						{title}
 					</Typography>
 					{!!githubUser && (

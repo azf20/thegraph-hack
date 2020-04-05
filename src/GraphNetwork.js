@@ -20,8 +20,10 @@ import Cytoscape from 'cytoscape';
 import cola from 'cytoscape-cola';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
+import Box from '@material-ui/core/Box';
+import fcose from 'cytoscape-fcose';
 
-Cytoscape.use(cola);
+Cytoscape.use(fcose);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,13 +83,22 @@ query GetStreams($streamsToShow: Int! $startingTime: String! $endingTime: String
 function InfoTab() {
 
     const [infoNode, updateInfoNode] = React.useState(null);
+    const [totalStreams, updateTotalStreams] = React.useState(0);
+    const [totalNodes, updateTotalNodes] = React.useState(0);
 
     function emitted(context) {
         updateInfoNode(context); // true
         console.log(infoNode)
       }
 
+    function totalsUpdate(context) {
+        console.log(context)
+        updateTotalNodes(context[0])
+        updateTotalStreams(context[1])
+      }
+
     EE.on('node-click', emitted);
+    EE.on('totals-update', totalsUpdate);
 
     function niceDateString(timestamp) {
       return new Intl.DateTimeFormat('en-GB', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(timestamp)
@@ -99,6 +110,26 @@ function InfoTab() {
 
   return (
     <>
+    <div className="nodeInfo">
+    <TableContainer component={Paper}>
+          <Table aria-label="simple table" size="small">
+            <TableBody>
+                <TableRow key="totalNodes">
+                  <TableCell component="th" scope="row" className="addressCell">
+                    Active Accounts
+                  </TableCell>
+                  <TableCell align="right">{totalNodes}</TableCell>
+                </TableRow>
+                <TableRow key="totalStreams">
+                  <TableCell component="th" scope="row" className="addressCell">
+                    Total Streams
+                  </TableCell>
+                  <TableCell align="right">{totalStreams}</TableCell>
+                </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+    </div>
     {infoNode ? <div className="nodeInfo">
     {"source" in infoNode ?
     <>
@@ -106,12 +137,12 @@ function InfoTab() {
           <Table aria-label="simple table" size="small">
             <TableBody>
                 <TableRow key="source">
-                  <TableCell component="th" scope="row" className="addressCell">Sender</TableCell>
-                  <TableCell align="right"><Link href={etherscanLink('address',infoNode.source)} target="_blank">{infoNode.source}</Link></TableCell>
+                  <TableCell component="th" scope="row">Sender</TableCell>
+                  <TableCell align="right" className="addressCell"><Link href={etherscanLink('address',infoNode.source)} target="_blank">{infoNode.source}</Link></TableCell>
                 </TableRow>
                 <TableRow key="target">
                   <TableCell component="th" scope="row">Recipient</TableCell>
-                  <TableCell align="right"><Link href={etherscanLink('address',infoNode.target)} target="_blank">{infoNode.target}</Link></TableCell>
+                  <TableCell align="right" className="addressCell"><Link href={etherscanLink('address',infoNode.target)} target="_blank">{infoNode.target}</Link></TableCell>
                 </TableRow>
                 <TableRow key="token">
                   <TableCell component="th" scope="row">Token</TableCell>
@@ -204,6 +235,27 @@ function InfoTab() {
     </TableBody>
   </Table>
   </TableContainer>
+  <p></p>
+  <TableContainer component={Paper}>
+        <Table aria-label="simple table" size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Counterpart</TableCell>
+              <TableCell align="right">Stream</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {infoNode.transactionDetails.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell component="th" scope="row" className="addressCell">
+                  <Link href={etherscanLink('address',row.counterpart)} target="_blank">{row.counterpart}</Link>
+                </TableCell>
+                <TableCell align="right">{row.type + ' ' + Math.round(row.transferred / Math.pow(10, row.decimals) * 100) / 100 + ' / ' + Math.round(row.deposit / Math.pow(10, row.decimals) * 100) / 100 + row.token}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>}
     </div>
     : null}
@@ -221,7 +273,6 @@ function CytoscapeNetwork() {
 
     const [startingTime, updateStartingTime] = React.useState(new Date(2020,2,1))
     const [endingTime, updateEndingTime] = React.useState(new Date())
-    const [selectedDate, handleDateChange] = React.useState(new Date());
 
     const { loading, error, data } = useQuery(GET_TRANSFERS, {
     variables: { streamsToShow, startingTime: dateToTimestampString(startingTime), endingTime: dateToTimestampString(endingTime)},
@@ -234,17 +285,17 @@ function CytoscapeNetwork() {
     });
 
     const [windowSize, updateWindowSize] = React.useState({
-      w: "50vw",
+      w: "40vw",
       h: "50vh"
     })
 
     const [tokenOptions, setTokenOptions] = React.useState([]);
 
-    const cytoscapeLayout = {
+    const coseLayout = {
     name: 'cola',
     animate: true, // whether to show the layout as it's running
     refresh: 1, // number of ticks per frame; higher is faster but more jerky
-    maxSimulationTime: 4000, // max length in ms to run the layout
+    maxSimulationTime: 6000, // max length in ms to run the layout
     ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
     fit: true, // on every layout reposition of nodes, fit the viewport
     padding: 30, // padding around the simulation
@@ -278,18 +329,84 @@ function CytoscapeNetwork() {
 
     // infinite layout options
     infinite: false // overrides all other options for a forces-all-the-time mode
-      //fit: true, // whether to fit to viewport
-      //padding: 30, // fit padding
-      //boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-      //animate: false, // whether to transition the node positions
-      //ready: undefined, // callback on layoutready
-      //stop: undefined, // callback on layoutstop
-      //transform: function (node, position ){ return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
   };
+
+  var cytoscapeLayout = {
+  name: 'fcose',
+
+  // 'draft', 'default' or 'proof'
+  // - "draft" only applies spectral layout
+  // - "default" improves the quality with incremental layout (fast cooling rate)
+  // - "proof" improves the quality with incremental layout (slow cooling rate)
+  quality: "default",
+  // Use random node positions at beginning of layout
+  // if this is set to false, then quality option must be "proof"
+  randomize: true,
+  // Whether or not to animate the layout
+  animate: true,
+  // Duration of animation in ms, if enabled
+  animationDuration: 1000,
+  // Easing of animation, if enabled
+  animationEasing: undefined,
+  // Fit the viewport to the repositioned nodes
+  fit: true,
+  // Padding around layout
+  padding: 30,
+  // Whether to include labels in node dimensions. Valid in "proof" quality
+  nodeDimensionsIncludeLabels: false,
+  // Whether or not simple nodes (non-compound nodes) are of uniform dimensions
+  uniformNodeDimensions: false,
+  // Whether to pack disconnected components - valid only if randomize: true
+  packComponents: true,
+
+  /* spectral layout options */
+
+  // False for random, true for greedy sampling
+  samplingType: true,
+  // Sample size to construct distance matrix
+  sampleSize: 25,
+  // Separation amount between nodes
+  nodeSeparation: 75,
+  // Power iteration tolerance
+  piTol: 0.0000001,
+
+  /* incremental layout options */
+
+  // Node repulsion (non overlapping) multiplier
+  nodeRepulsion: 4500,
+  // Ideal edge (non nested) length
+  idealEdgeLength: 50,
+  // Divisor to compute edge forces
+  edgeElasticity: 0.45,
+  // Nesting factor (multiplier) to compute ideal edge length for nested edges
+  nestingFactor: 0.1,
+  // Maximum number of iterations to perform
+  numIter: 2500,
+  // For enabling tiling
+  tile: true,
+  // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
+  tilingPaddingVertical: 10,
+  // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
+  tilingPaddingHorizontal: 10,
+  // Gravity force (constant)
+  gravity: 0.25,
+  // Gravity range (constant) for compounds
+  gravityRangeCompound: 1.5,
+  // Gravity force (constant) for compounds
+  gravityCompound: 1.0,
+  // Gravity range (constant)
+  gravityRange: 3.8,
+  // Initial cooling factor for incremental layout
+  initialEnergyOnIncremental: 0.3,
+
+  /* layout event callbacks */
+  ready: () => {}, // on layoutready
+  stop: () => {} // on layoutstop
+};
 
     function normaliseTransactions(node) {
       const newNode = node;
-      newNode['data']['normalisedTransactions'] = Math.log(newNode['data']['transactions']*1000);
+      newNode['data']['normalisedTransactions'] = Math.log(newNode['data']['transactions']*10000);
       return newNode
     }
 
@@ -354,24 +471,34 @@ function CytoscapeNetwork() {
     function createNodes(streams) {
       const nodes = {}
       for (let stream of streams) {
+        var withdrawalTotal = 0
+        for (let withdrawal of stream.withdrawals) {
+          withdrawalTotal += Number(withdrawal.amount);
+        }
+
+        var transferred = withdrawalTotal + Number(stream.cancellation ? stream.cancellation.recipientBalance : 0)
+
         if (stream['txs'][0]['from'] in nodes) {
           nodes[stream['txs'][0]['from']]['data']['sends']++
           nodes[stream['txs'][0]['from']]['data']['transactions']++
           nodes[stream['txs'][0]['from']]['data']['isSender'] = true
           nodes[stream['txs'][0]['from']]['data'][stream.token.symbol] = true
-          //nodes[stream['txs'][0]['from']]['data']['transactions'].push()
+          nodes[stream['txs'][0]['from']]['data']['transactionDetails'].push({id: stream.id, type: 'sent', token: stream.token.symbol, decimals: stream.token.decimals, deposit: stream.deposit, transferred: transferred, startTime: stream.startTime, counterpart: stream.recipient})
         }
         else {
-          nodes[stream['txs'][0]['from']] = {data: {id: stream['txs'][0]['from'], label: stream['txs'][0]['from'], sends: 1, receives: 0, transactions: 1, isSender: true, isRecipient: false, [stream.token.symbol]: true}}
+          nodes[stream['txs'][0]['from']] = {data: {id: stream['txs'][0]['from'], label: stream['txs'][0]['from'], sends: 1, receives: 0, transactions: 1, isSender: true, isRecipient: false, [stream.token.symbol]: true,
+            transactionDetails: [{id: stream.id, type: 'sent', token: stream.token.symbol, decimals: stream.token.decimals, deposit: stream.deposit, transferred: transferred, startTime: stream.startTime, counterpart: stream.recipient}]}}
         }
         if (stream.recipient in nodes) {
           nodes[stream.recipient]['data']['receives']++
           nodes[stream.recipient]['data']['transactions']++
           nodes[stream.recipient]['data']['isRecipient'] = true
           nodes[stream.recipient]['data'][stream.token.symbol] = true
+          nodes[stream.recipient]['data']['transactionDetails'].push({id: stream.id, type: 'received', token: stream.token.symbol, decimals: stream.token.decimals, deposit: stream.deposit, transferred: transferred, startTime: stream.startTime, counterpart: stream['txs'][0]['from']})
         }
         else {
-          nodes[stream.recipient] = {data: {id: stream.recipient, label: stream.recipient, sends: 0, receives: 1, transactions: 1, isSender: false, isRecipient: true, [stream.token.symbol]: true}}
+          nodes[stream.recipient] = {data: {id: stream.recipient, label: stream.recipient, sends: 0, receives: 1, transactions: 1, isSender: false, isRecipient: true, [stream.token.symbol]: true,
+            transactionDetails: [{id: stream.id, type: 'received', token: stream.token.symbol, decimals: stream.token.decimals, deposit: stream.deposit, transferred: transferred, startTime: stream.startTime, counterpart: stream['txs'][0]['from']}]}}
         }
       }
 
@@ -395,10 +522,10 @@ function CytoscapeNetwork() {
 
         const newNodes = createNodes(data.streams)
 
+        EE.emit('totals-update', [newNodes.length, data.streams.length])
+        EE.emit('reset-view')
         updateCytoscapeData({nodes: newNodes, edges: data.streams.map(function (x) {return createEdges(x, tokenLookup)})})
-        console.log(cytoscapeData)
-
-
+        
 
         function setUpListeners() {
         myCyRef.on('tap', function(event) {
@@ -454,13 +581,24 @@ function CytoscapeNetwork() {
     return (
       <div className="CytoscapeNetwork">
       <div className="filters">
-      {loading ? <p>Loading...</p> :
-        <Select isMulti options={tokenOptions} onChange={tokenSelectChange} placeholder="Select tokens"/>}
-      <Button onClick={resetView} color="primary" variant="contained" >Refresh</Button>
+      <Grid container spacing={2}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <Grid item>
         <DateTimePicker value={startingTime} onChange={updateStartingTime} />
-        <DateTimePicker value={endingTime} onChange={updateEndingTime} />
+        </Grid>
+        <Grid item>
+        <DateTimePicker value={endingTime} onChange={updateEndingTime} padding="5px" />
+        </Grid>
       </MuiPickersUtilsProvider>
+      <Grid item>
+      <Button onClick={resetView} color="primary" variant="contained" >Refresh</Button>
+      </Grid>
+      </Grid>
+      {loading ? <p>Loading...</p> :
+      <>
+      <p></p>
+      <Select isMulti options={tokenOptions} onChange={tokenSelectChange} placeholder="Select tokens"/>
+      </>}
       </div>
 
 
@@ -500,10 +638,10 @@ function GraphNetwork() {
   return (
     <div className={classes.root}>
     <Grid container spacing={3}>
-        <Grid item lg>
+        <Grid item>
           <CytoscapeNetwork/>
         </Grid>
-        <Grid item m>
+        <Grid item>
           <InfoTab/>
         </Grid>
     </Grid>

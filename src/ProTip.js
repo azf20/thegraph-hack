@@ -29,7 +29,7 @@ export default function ProTip() {
       <LightBulbIcon className={classes.lightBulb} />
       Made with curiosity as part of the {' '}
       <Link href="https://medium.com/encode-club/prizes-and-challenges-future-of-blockchain-competition-40fe71bfe0ac">StakeZero Future of Blockchain Hackathon</Link>
-      . Hat tip to <Link href="https://thegraph.com/">The Graph</Link>, <Link href="https://sablier.finance/">Sablier</Link>, <Link href="https://js.cytoscape.org/">Cytoscape</Link> and <Link href="https://material-ui.com/">material-ui</Link>.
+      . Built with <Link href="https://thegraph.com/">The Graph</Link>, <Link href="https://sablier.finance/">Sablier</Link>, <Link href="https://js.cytoscape.org/">Cytoscape</Link> and <Link href="https://material-ui.com/">material-ui</Link>.
     </Typography>
   );
 }

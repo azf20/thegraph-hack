@@ -24,7 +24,7 @@ function Copyright() {
 export default function App() {
   return (
     <>
-    <AppBar title={"GraphTheGraph"} githubUser={"azf20"} />
+    <AppBar title={"Graph TheGraph: Sablier Edition"} githubUser={"azf20/thegraph-hack"} />
     <Container>
       <Box my={4}>
         <Paper>
