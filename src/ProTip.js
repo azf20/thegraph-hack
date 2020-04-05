@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ProTip(test) {
   const classes = useStyles();
-  console.log(test)
   return (
     <Typography className={classes.root} color="textSecondary" align="center">
     <LightBulbIcon className={classes.lightBulb} />
