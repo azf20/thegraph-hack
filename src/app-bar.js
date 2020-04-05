@@ -21,7 +21,7 @@ const styles = {
 }
 
 const AppBar = props => {
-	const { classes, title, githubUser } = props
+	const { classes, title, githubLink } = props
 	return (
 		<div className={classes.root}>
 			<MuiAppBar position="static">
@@ -29,8 +29,8 @@ const AppBar = props => {
 					<Typography variant="h5" color="inherit" className={classes.flex}>
 						{title}
 					</Typography>
-					{!!githubUser && (
-						<IconButton color="inherit" href={githubUser ? `https://github.com/${githubUser}` : undefined}>
+					{!!githubLink && (
+						<IconButton color="inherit" href={githubLink ? `${githubLink}` : undefined}>
 							<GitHubIcon />
 						</IconButton>
 					)}
