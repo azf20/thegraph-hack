@@ -1,7 +1,6 @@
 import React from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
-import { Graph } from 'react-d3-graph';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Select from 'react-select'
 import Link from '@material-ui/core/Link';
@@ -20,7 +19,6 @@ import Cytoscape from 'cytoscape';
 import cola from 'cytoscape-cola';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns'; // choose your lib
-import Box from '@material-ui/core/Box';
 import fcose from 'cytoscape-fcose';
 
 Cytoscape.use(fcose);
@@ -222,7 +220,9 @@ function InfoTab() {
     <TableBody>
         <TableRow key="id">
           <TableCell component="th" scope="row">Account</TableCell>
-          <TableCell align="right">{infoNode.id}</TableCell>
+          <TableCell align="right" className="addressCell">
+          <Link href={etherscanLink('address',infoNode.id)} target="_blank">{infoNode.id}</Link>
+          </TableCell>
         </TableRow>
         <TableRow key="sends">
           <TableCell component="th" scope="row">Sends</TableCell>
@@ -250,7 +250,7 @@ function InfoTab() {
                 <TableCell component="th" scope="row" className="addressCell">
                   <Link href={etherscanLink('address',row.counterpart)} target="_blank">{row.counterpart}</Link>
                 </TableCell>
-                <TableCell align="right">{row.type + ' ' + Math.round(row.transferred / Math.pow(10, row.decimals) * 100) / 100 + ' / ' + Math.round(row.deposit / Math.pow(10, row.decimals) * 100) / 100 + row.token}</TableCell>
+                <TableCell align="right">{row.type + ' ' + Math.round(row.transferred / Math.pow(10, row.decimals) * 100) / 100 + ' / ' + Math.round(row.deposit / Math.pow(10, row.decimals) * 100) / 100 + ' ' + row.token}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -271,7 +271,7 @@ function CytoscapeNetwork() {
       return Math.round(date.getTime()/1000).toString();
     }
 
-    const [startingTime, updateStartingTime] = React.useState(new Date(2020,2,1))
+    const [startingTime, updateStartingTime] = React.useState(new Date(2020,1,1))
     const [endingTime, updateEndingTime] = React.useState(new Date())
 
     const { loading, error, data } = useQuery(GET_TRANSFERS, {
@@ -525,7 +525,7 @@ function CytoscapeNetwork() {
         EE.emit('totals-update', [newNodes.length, data.streams.length])
         EE.emit('reset-view')
         updateCytoscapeData({nodes: newNodes, edges: data.streams.map(function (x) {return createEdges(x, tokenLookup)})})
-        
+
 
         function setUpListeners() {
         myCyRef.on('tap', function(event) {
