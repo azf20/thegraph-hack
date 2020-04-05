@@ -543,18 +543,23 @@ function CytoscapeNetwork() {
           }
         })
 
-        var filteredEdges = {}
+        var filteredEdges = null
         var tokenFiltered = false
 
 
 
         EE.on('filter-select',function(values) {
-          if(!Array.isArray(values) || !values.length) {
+          if((!Array.isArray(values) || !values.length) && tokenFiltered) {
             filteredEdges.restore()
             tokenFiltered = false
+            filteredEdges = null
           }
           else {
-            if(tokenFiltered) {filteredEdges.restore()}
+            if(filteredEdges) {
+              filteredEdges.restore()
+            }
+
+          if(values && values.length > 0) {
 
           var edgeFilter  = 'edge'
           var nodeFilter  = 'node'
@@ -568,10 +573,15 @@ function CytoscapeNetwork() {
           myCyRef.remove(filteredEdges)
           tokenFiltered = true
         }
+      }
       })
 
       EE.on('reset-view',function() {
-        if(tokenFiltered) {filteredEdges.restore()}
+        if(tokenFiltered) {
+          filteredEdges.restore()
+          tokenFiltered = false
+          filteredEdges = null
+        }
         setRefreshButton('Refresh')
         updateCytoscapeData({nodes: newNodes, edges: data.streams.map(function (x) {return createEdges(x, tokenLookup)})})
         //myCyRef.layout({name: 'random'}).run()
