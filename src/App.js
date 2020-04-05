@@ -24,7 +24,7 @@ function Copyright() {
 export default function App() {
   return (
     <>
-    <AppBar title={"Graph TheGraph: Explore Sablier Streams"} githubUser={"azf20/thegraph-hack"} />
+    <AppBar title={"Graph TheGraph: Sablier Interactive"} githubUser={"azf20/thegraph-hack"} />
     <Container>
       <Box my={4}>
         <Paper>

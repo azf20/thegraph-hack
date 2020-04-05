@@ -154,7 +154,7 @@ function InfoTab() {
                 </TableRow>
                 <TableRow key="timeLength">
                   <TableCell component="th" scope="row">Minutes</TableCell>
-                  <TableCell align="right">{infoNode.stopTime - infoNode.startTime}</TableCell>
+                  <TableCell align="right">{(infoNode.stopTime - infoNode.startTime) / 60}</TableCell>
                 </TableRow>
                 <TableRow key="deposit">
                   <TableCell component="th" scope="row">Deposit</TableCell>
@@ -288,6 +288,8 @@ function CytoscapeNetwork() {
     })
 
     const [tokenOptions, setTokenOptions] = React.useState([]);
+
+    const [refreshButton, setRefreshButton] = React.useState('Start');
 
     const coseLayout = {
     name: 'cola',
@@ -562,6 +564,7 @@ function CytoscapeNetwork() {
 
       EE.on('reset-view',function() {
         if(tokenFiltered) {filteredEdges.restore()}
+        setRefreshButton('Refresh')
         updateCytoscapeData({nodes: newNodes, edges: data.streams.map(function (x) {return createEdges(x, tokenLookup)})})
         //myCyRef.layout({name: 'random'}).run()
       })
@@ -583,7 +586,7 @@ function CytoscapeNetwork() {
         </Grid>
       </MuiPickersUtilsProvider>
       <Grid item>
-      <Button onClick={resetView} color="primary" variant="contained" >Refresh</Button>
+      <Button onClick={resetView} color="primary" variant="contained" >{refreshButton}</Button>
       </Grid>
       </Grid>
       {loading ? <p>Loading...</p> :
