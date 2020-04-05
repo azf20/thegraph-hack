@@ -19,6 +19,7 @@ Hacked as part of the [StakeZero Future of Blockchain Hackathon](https://medium.
 - [material-ui](http://material-ui.com/)
 - [react-select](https://react-select.com/)
 - [apolloGraphQL](https://www.apollographql.com/)
+- [firebase](https://firebase.google.com/)
 
 ## Running locally
 ```
