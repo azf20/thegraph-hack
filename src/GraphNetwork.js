@@ -84,15 +84,24 @@ function InfoTab() {
     const [infoNode, updateInfoNode] = React.useState(null);
     const [totalStreams, updateTotalStreams] = React.useState(0);
     const [totalNodes, updateTotalNodes] = React.useState(0);
+    const [topTenNodes, updateTopTenNodes] = React.useState([]);
 
     function emitted(context) {
+
         updateInfoNode(context); // true
       }
 
     function totalsUpdate(context) {
         updateTotalNodes(context[0])
         updateTotalStreams(context[1])
+        updateTopTenNodes(context[2])
       }
+
+    function handleTopTenClick(id) {
+      const selectedNode = topTenNodes.filter(node => node.data.id == id)[0]['data']
+      updateInfoNode(selectedNode)
+      EE.emit('top-ten-selected', id)
+    }
 
     EE.on('node-click', emitted);
     EE.on('totals-update', totalsUpdate);
@@ -257,7 +266,29 @@ function InfoTab() {
       </TableContainer>
     </>}
     </div>
-    : null}
+    :
+    <TableContainer component={Paper}>
+          <Table aria-label="simple table" size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Top 10 Accounts</TableCell>
+                <TableCell align="right">Streams</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+            {topTenNodes.map((row) => (
+              <TableRow key={row.data.id} onClick={() => handleTopTenClick(row.data.id)} hover={true}>
+                <TableCell component="th" scope="row" className="addressCell">
+                  {row.data.id}
+                </TableCell>
+                <TableCell align="right">{row.data.transactions}</TableCell>
+              </TableRow>
+            ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+  }
     </>
     )
 }
@@ -528,7 +559,9 @@ function CytoscapeNetwork() {
 
         const newNodes = createNodes(data.streams)
 
-        EE.emit('totals-update', [newNodes.length, data.streams.length])
+        const topTenNodes = newNodes.sort((a, b) => b.data.transactions - a.data.transactions).slice(0,9)
+
+        EE.emit('totals-update', [newNodes.length, data.streams.length, topTenNodes])
         EE.emit('reset-view')
         updateCytoscapeData({nodes: newNodes, edges: data.streams.map(function (x) {return createEdges(x, tokenLookup)})})
 
@@ -537,8 +570,13 @@ function CytoscapeNetwork() {
         myCyRef.on('tap', function(event) {
           var evtTarget = event.target;
           if( evtTarget === myCyRef ){
+            myCyRef.elements().removeClass('faded')
             EE.emit('node-click', null)
           } else {
+            myCyRef.elements().removeClass('faded')
+            const nodeNeighborhood = event.target.closedNeighborhood();
+            var fadedElements = myCyRef.elements().not(nodeNeighborhood);
+            fadedElements.addClass('faded');
             EE.emit('node-click', event.target._private.data)
           }
         })
@@ -547,6 +585,22 @@ function CytoscapeNetwork() {
         var tokenFiltered = false
 
 
+        EE.on('top-ten-selected',function(nodeId) {
+          if(filteredEdges) {
+            filteredEdges.restore()
+          }
+          console.log(nodeId)
+          const allElements = myCyRef.elements()
+          const selectedNode = allElements.filter('node#' + nodeId )
+          const nodeNeighborhood = selectedNode.closedNeighborhood();
+
+          console.log(selectedNode)
+
+          var fadedElements = allElements.not(nodeNeighborhood);
+          fadedElements.addClass('faded');
+
+          console.log(fadedElements)
+        })
 
         EE.on('filter-select',function(values) {
           if((!Array.isArray(values) || !values.length) && tokenFiltered) {
@@ -577,6 +631,7 @@ function CytoscapeNetwork() {
       })
 
       EE.on('reset-view',function() {
+        myCyRef.elements().removeClass('faded')
         if(tokenFiltered) {
           filteredEdges.restore()
           tokenFiltered = false
@@ -637,6 +692,12 @@ function CytoscapeNetwork() {
         'target-arrow-color': 'data(color)',
         'target-arrow-shape': 'triangle',
         'curve-style': 'bezier'
+      }
+    },
+    {
+      selector: '.faded',
+      style: {
+        opacity: 0.1
       }
     }
     ]}

@@ -28,3 +28,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+
+node.faded {
+  opacity: 0.08;
+}
+edge.faded {
+  opacity: 0.06;
+}
